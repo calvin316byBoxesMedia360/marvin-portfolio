@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Admin — Marvin Martinez Portfolio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter+Tight:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0d; --bg2: #141414; --bg3: #1a1a1a;
+    --fg: #f2f2ee; --dim: #6a6a65; --line: #222220;
+    --accent: oklch(0.86 0.09 162); --accent-ink: #0a0a0a;
+    --red: #e05252; --yellow: oklch(0.82 0.14 70);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--fg); }
+  body { font-family: "Inter Tight", sans-serif; font-size: 14px; -webkit-font-smoothing: antialiased; }
+  .mono { font-family: "JetBrains Mono", monospace; }
+
+  /* ── Layout ── */
+  .layout { display: grid; grid-template-rows: 52px 1fr; height: 100vh; }
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px; border-bottom: 1px solid var(--line);
+    background: var(--bg2); gap: 12px;
+  }
+  .topbar-left  { display: flex; align-items: center; gap: 14px; }
+  .topbar-right { display: flex; align-items: center; gap: 8px; }
+  .brand { font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+  .brand span { color: var(--accent); }
+  .badge { font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--dim); background: var(--bg3); border: 1px solid var(--line); padding: 3px 8px; }
+
+  .main { display: grid; grid-template-columns: 280px 1fr; overflow: hidden; }
+
+  /* ── Sidebar ── */
+  .sidebar { border-right: 1px solid var(--line); display: flex; flex-direction: column; overflow: hidden; background: var(--bg2); }
+  .sidebar-head {
+    padding: 14px 16px 12px; border-bottom: 1px solid var(--line);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .sidebar-head h2 { font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); font-weight: 400; }
+  .project-list { flex: 1; overflow-y: auto; padding: 8px 0; }
+  .project-list::-webkit-scrollbar { width: 4px; }
+  .project-list::-webkit-scrollbar-track { background: transparent; }
+  .project-list::-webkit-scrollbar-thumb { background: var(--line); }
+
+  .proj-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px; cursor: pointer;
+    border-left: 2px solid transparent;
+    transition: background .1s, border-color .1s;
+  }
+  .proj-item:hover  { background: var(--bg3); }
+  .proj-item.active { background: var(--bg3); border-left-color: var(--accent); }
+  .proj-item .num   { font-family: "JetBrains Mono", monospace; font-size: 10px; color: var(--dim); min-width: 26px; }
+  .proj-item .name  { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
+  .proj-item .has-img { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+  .proj-item .no-img  { width: 6px; height: 6px; border-radius: 50%; border: 1px solid var(--dim); flex-shrink: 0; }
+
+  .sidebar-footer { border-top: 1px solid var(--line); padding: 12px 16px; }
+
+  /* ── Editor panel ── */
+  .panel { display: flex; flex-direction: column; overflow: hidden; }
+  .panel-tabs {
+    display: flex; border-bottom: 1px solid var(--line);
+    background: var(--bg2); flex-shrink: 0;
+  }
+  .tab-btn {
+    font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: .08em; text-transform: uppercase;
+    padding: 14px 20px; cursor: pointer; color: var(--dim); background: none; border: none;
+    border-bottom: 2px solid transparent; transition: color .15s, border-color .15s;
+  }
+  .tab-btn:hover  { color: var(--fg); }
+  .tab-btn.active { color: var(--fg); border-bottom-color: var(--accent); }
+
+  .panel-body { flex: 1; overflow-y: auto; padding: 28px 32px; }
+  .panel-body::-webkit-scrollbar { width: 4px; }
+  .panel-body::-webkit-scrollbar-thumb { background: var(--line); }
+
+  /* ── Form ── */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .form-full  { grid-column: span 2; }
+  .field label {
+    display: block; font-family: "JetBrains Mono", monospace; font-size: 10px;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px;
+  }
+  .field input, .field select {
+    width: 100%; background: var(--bg3); border: 1px solid var(--line); color: var(--fg);
+    font-family: "Inter Tight", sans-serif; font-size: 14px; padding: 9px 12px;
+    outline: none; transition: border-color .15s;
+  }
+  .field input:focus, .field select:focus { border-color: var(--accent); }
+  .field input::placeholder { color: var(--dim); }
+
+  /* ── Image zone ── */
+  .img-section { margin-bottom: 28px; }
+  .img-section h3 {
+    font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--dim); margin-bottom: 14px;
+  }
+  .img-row { display: grid; grid-template-columns: 200px 1fr; gap: 16px; align-items: start; }
+  .img-preview {
+    aspect-ratio: 4/3; background: var(--bg3); border: 1px dashed var(--line);
+    overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center;
+  }
+  .img-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .img-placeholder {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    color: var(--dim); font-family: "JetBrains Mono", monospace; font-size: 10px;
+    letter-spacing: .06em; text-transform: uppercase; text-align: center; padding: 16px;
+  }
+  .img-placeholder svg { opacity: .4; }
+  .drop-zone {
+    border: 1px dashed var(--line); padding: 28px 20px;
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    cursor: pointer; transition: border-color .15s, background .15s;
+    text-align: center;
+  }
+  .drop-zone:hover, .drop-zone.dragover { border-color: var(--accent); background: color-mix(in oklab, var(--accent) 5%, transparent); }
+  .drop-zone p { font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--dim); letter-spacing: .04em; }
+  .drop-zone p strong { color: var(--fg); }
+  .drop-zone input[type=file] { display: none; }
+
+  /* ── Media Library ── */
+  .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; }
+  .media-thumb {
+    aspect-ratio: 1; background: var(--bg3); overflow: hidden; position: relative;
+    cursor: pointer; border: 2px solid transparent; transition: border-color .15s;
+  }
+  .media-thumb:hover { border-color: var(--accent); }
+  .media-thumb.selected { border-color: var(--accent); }
+  .media-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .media-thumb .thumb-name {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,.7); font-family: "JetBrains Mono", monospace; font-size: 9px;
+    padding: 3px 5px; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    opacity: 0; transition: opacity .15s;
+  }
+  .media-thumb:hover .thumb-name { opacity: 1; }
+
+  /* ── Preview panel ── */
+  .preview-panel { display: flex; flex-direction: column; height: 100%; }
+  .preview-bar {
+    display: flex; align-items: center; gap: 8px; padding: 10px 16px;
+    border-bottom: 1px solid var(--line); background: var(--bg2); flex-shrink: 0;
+  }
+  .preview-frame-wrap {
+    flex: 1; overflow: hidden; display: flex; align-items: flex-start; justify-content: center;
+    padding: 20px; background: var(--bg);
+  }
+  .preview-frame-wrap.mobile { align-items: flex-start; }
+  iframe#preview-frame {
+    border: 1px solid var(--line); background: #0a0a0a;
+    transition: width .3s ease;
+  }
+
+  /* ── Buttons ── */
+  .btn {
+    font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: .08em;
+    text-transform: uppercase; padding: 9px 16px; border: 1px solid var(--line);
+    background: transparent; color: var(--fg); cursor: pointer;
+    transition: background .15s, border-color .15s, color .15s; white-space: nowrap;
+  }
+  .btn:hover    { border-color: var(--fg); }
+  .btn-primary  { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+  .btn-primary:hover { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .btn-accent   { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .btn-accent:hover { filter: brightness(1.1); }
+  .btn-danger   { color: var(--red); border-color: var(--red); }
+  .btn-danger:hover { background: var(--red); color: #fff; }
+  .btn-sm       { padding: 6px 12px; font-size: 10px; }
+  .btn-icon     { padding: 6px 10px; }
+  .btn[disabled] { opacity: .4; cursor: not-allowed; }
+
+  /* ── Status toast ── */
+  #toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--bg2); border: 1px solid var(--line); color: var(--fg);
+    font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: .04em;
+    padding: 10px 20px; z-index: 9999; transition: transform .25s ease, opacity .25s ease;
+    opacity: 0; white-space: nowrap;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  #toast.ok   { border-color: var(--accent); color: var(--accent); }
+  #toast.err  { border-color: var(--red);    color: var(--red); }
+
+  /* ── Deploy button with spinner ── */
+  .deploy-btn { position: relative; min-width: 120px; }
+  .deploy-btn .spinner {
+    display: none; width: 10px; height: 10px;
+    border: 1px solid currentColor; border-top-color: transparent;
+    border-radius: 50%; animation: spin .6s linear infinite;
+  }
+  .deploy-btn.loading .spinner { display: inline-block; }
+  .deploy-btn.loading .deploy-label { display: none; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Misc ── */
+  .divider { border: 0; border-top: 1px solid var(--line); margin: 24px 0; }
+  .row-btns { display: flex; gap: 8px; align-items: center; }
+  .empty-state {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    height: 100%; color: var(--dim); gap: 12px; text-align: center;
+  }
+  .empty-state p { font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
+  .section-title {
+    font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--dim); margin-bottom: 16px;
+  }
+  .deploy-log {
+    background: var(--bg3); border: 1px solid var(--line); padding: 12px 16px;
+    font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--dim);
+    max-height: 80px; overflow-y: auto; margin-top: 8px; white-space: pre-wrap; display: none;
+  }
+  .deploy-log.visible { display: block; }
+  .deploy-log .ok  { color: var(--accent); }
+  .deploy-log .err { color: var(--red); }
+  .netlify-link { color: var(--accent); text-decoration: none; font-family: "JetBrains Mono", monospace; font-size: 11px; }
+  .netlify-link:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- ── Top bar ── -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <span class="brand"><span>●</span> MARVIN MARTINEZ</span>
+      <span class="badge">ADMIN v.1</span>
+    </div>
+    <div class="topbar-right">
+      <button class="btn btn-sm" id="btn-preview-toggle" onclick="switchTab('preview')">PREVIEW ↗</button>
+      <button class="btn btn-sm deploy-btn btn-accent" id="btn-deploy" onclick="deploy()">
+        <span class="deploy-label">DEPLOY →</span>
+        <span class="spinner"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Main ── -->
+  <div class="main">
+
+    <!-- ── Sidebar ── -->
+    <aside class="sidebar">
+      <div class="sidebar-head">
+        <h2>Proyectos</h2>
+        <button class="btn btn-sm" onclick="addProject()">+ NUEVO</button>
+      </div>
+      <div class="project-list" id="project-list"></div>
+      <div class="sidebar-footer">
+        <p class="mono" id="sidebar-status" style="font-size:10px;color:var(--dim);letter-spacing:.04em;text-transform:uppercase;"></p>
+      </div>
+    </aside>
+
+    <!-- ── Right panel ── -->
+    <div class="panel">
+      <div class="panel-tabs">
+        <button class="tab-btn active" data-tab="editor" onclick="switchTab('editor')">Editor</button>
+        <button class="tab-btn" data-tab="media"  onclick="switchTab('media')">Media · <span id="media-count">0</span></button>
+        <button class="tab-btn" data-tab="preview" onclick="switchTab('preview')">Preview</button>
+        <button class="tab-btn" data-tab="deploy" onclick="switchTab('deploy')">Deploy</button>
+      </div>
+
+      <!-- EDITOR TAB -->
+      <div class="panel-body" id="tab-editor">
+        <div class="empty-state" id="editor-empty">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M3 9h18M9 21V9"/></svg>
+          <p>Selecciona un proyecto para editar</p>
+        </div>
+        <div id="editor-form" style="display:none;">
+          <div class="form-grid">
+            <div class="field form-full">
+              <label>Título del proyecto</label>
+              <input type="text" id="f-title" placeholder="Ej: CJR Grading & Paving" />
+            </div>
+            <div class="field">
+              <label>Cliente</label>
+              <input type="text" id="f-client" placeholder="Ej: Carlos J. Romero" />
+            </div>
+            <div class="field">
+              <label>Año</label>
+              <input type="text" id="f-year" placeholder="2025" maxlength="4" />
+            </div>
+            <div class="field form-full">
+              <label>Categoría / Tag</label>
+              <input type="text" id="f-tag" placeholder="Ej: Brand · Print" />
+            </div>
+          </div>
+
+          <hr class="divider" />
+
+          <div class="img-section">
+            <h3>Imagen de portada</h3>
+            <div class="img-row">
+              <div class="img-preview" id="cover-preview">
+                <div class="img-placeholder">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  <span>Sin imagen</span>
+                </div>
+              </div>
+              <div>
+                <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()"
+                  ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--dim)" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <p><strong>Arrastra una imagen</strong><br/>o haz clic para seleccionar</p>
+                  <p style="font-size:10px;margin-top:4px;">JPG, PNG, WEBP · máx 25 MB</p>
+                  <input type="file" id="file-input" accept="image/*" onchange="handleFileSelect(event)" />
+                </div>
+                <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+                  <button class="btn btn-sm" onclick="switchTab('media')">Elegir de Media Library</button>
+                  <button class="btn btn-sm btn-danger" id="btn-remove-img" onclick="removeCover()" style="display:none;">✕ Quitar imagen</button>
+                </div>
+                <p class="mono" id="cover-path" style="font-size:10px;color:var(--dim);margin-top:8px;word-break:break-all;"></p>
+              </div>
+            </div>
+          </div>
+
+          <hr class="divider" />
+
+          <div class="row-btns" style="justify-content:space-between;">
+            <button class="btn btn-danger" onclick="deleteProject()">✕ Eliminar proyecto</button>
+            <div class="row-btns">
+              <button class="btn btn-sm" onclick="moveProject(-1)" title="Subir">↑</button>
+              <button class="btn btn-sm" onclick="moveProject(1)"  title="Bajar">↓</button>
+              <button class="btn btn-primary" onclick="saveAll()">✓ Guardar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MEDIA TAB -->
+      <div class="panel-body" id="tab-media" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+          <p class="section-title" style="margin:0;">Media Library · <span id="upload-count">0</span> archivos</p>
+          <div class="row-btns">
+            <button class="btn btn-sm" onclick="document.getElementById('media-upload').click()">+ Subir imágenes</button>
+            <input type="file" id="media-upload" accept="image/*" multiple style="display:none" onchange="uploadMultiple(event)" />
+          </div>
+        </div>
+        <div class="media-grid" id="media-grid"></div>
+      </div>
+
+      <!-- PREVIEW TAB -->
+      <div id="tab-preview" style="display:none;height:100%;overflow:hidden;">
+        <div class="preview-panel">
+          <div class="preview-bar">
+            <button class="btn btn-sm active" id="prev-desktop" onclick="setPreview('desktop')">DESKTOP</button>
+            <button class="btn btn-sm" id="prev-mobile" onclick="setPreview('mobile')">MOBILE · 390</button>
+            <div style="flex:1;"></div>
+            <a href="/portfolio.html" target="_blank" class="btn btn-sm">ABRIR FULL ↗</a>
+            <button class="btn btn-sm" onclick="reloadPreview()">↺ RELOAD</button>
+          </div>
+          <div class="preview-frame-wrap" id="preview-frame-wrap">
+            <iframe id="preview-frame" src="/portfolio.html" style="width:100%;height:100%;border:none;"></iframe>
+          </div>
+        </div>
+      </div>
+
+      <!-- DEPLOY TAB -->
+      <div class="panel-body" id="tab-deploy" style="display:none;">
+        <p class="section-title">Deploy a Netlify</p>
+        <p style="color:var(--dim);font-size:13px;line-height:1.7;margin-bottom:24px;">
+          Al hacer deploy, se hace <span class="mono" style="color:var(--fg);">git push</span> al repo de GitHub.
+          Netlify detecta el cambio y actualiza tu sitio en ~30 segundos.
+        </p>
+
+        <div class="field" style="margin-bottom:16px;">
+          <label>Mensaje del commit</label>
+          <input type="text" id="deploy-msg" value="content: update portfolio" />
+        </div>
+
+        <div class="row-btns" style="margin-bottom:16px;">
+          <button class="btn btn-accent deploy-btn" id="btn-deploy-main" onclick="deploy()">
+            <span class="deploy-label">DEPLOY →</span>
+            <span class="spinner"></span>
+          </button>
+          <button class="btn btn-sm" onclick="saveAll()">Solo guardar (sin deploy)</button>
+        </div>
+
+        <div class="deploy-log" id="deploy-log"></div>
+
+        <hr class="divider" />
+
+        <p class="section-title">Tu sitio en vivo</p>
+        <div id="site-url-block" style="display:flex;align-items:center;gap:12px;">
+          <span class="mono" id="site-url-display" style="font-size:12px;color:var(--dim);">— configura tu URL en settings —</span>
+          <button class="btn btn-sm" onclick="editSiteUrl()">EDITAR URL</button>
+        </div>
+        <div id="site-url-edit" style="display:none;margin-top:12px;">
+          <div class="field" style="max-width:400px;margin-bottom:8px;">
+            <label>URL de tu sitio Netlify</label>
+            <input type="text" id="netlify-url-input" placeholder="https://tu-sitio.netlify.app" />
+          </div>
+          <button class="btn btn-sm btn-primary" onclick="saveSiteUrl()">Guardar URL</button>
+        </div>
+      </div>
+
+    </div><!-- /panel -->
+  </div><!-- /main -->
+</div><!-- /layout -->
+
+<div id="toast"></div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────
+let projects = [];
+let selected = null;  // index in projects array
+let uploads  = [];
+let activeTab = "editor";
+let previewMode = "desktop";
+
+// ── Init ───────────────────────────────────────────────────────
+async function init() {
+  await loadProjects();
+  await loadUploads();
+  const saved = localStorage.getItem("mm_netlify_url");
+  if (saved) {
+    document.getElementById("site-url-display").textContent = saved;
+    document.getElementById("site-url-display").style.color = "var(--accent)";
+  }
+  renderSidebar();
+  setPreviewFrame();
+}
+
+async function loadProjects() {
+  const res  = await fetch("/api/projects");
+  projects = await res.json();
+  document.getElementById("sidebar-status").textContent =
+    String(projects.length).padStart(2, "0") + " proyectos";
+}
+
+async function loadUploads() {
+  const res = await fetch("/api/uploads");
+  uploads = await res.json();
+  document.getElementById("media-count").textContent = uploads.length;
+  document.getElementById("upload-count").textContent = uploads.length;
+  renderMediaGrid();
+}
+
+// ── Sidebar ────────────────────────────────────────────────────
+function renderSidebar() {
+  const list = document.getElementById("project-list");
+  list.innerHTML = "";
+  projects.forEach((p, i) => {
+    const div = document.createElement("div");
+    div.className = "proj-item" + (i === selected ? " active" : "");
+    div.innerHTML = `
+      <span class="num mono">P.${p.n}</span>
+      <span class="name">${p.title}</span>
+      <span class="${p.cover ? "has-img" : "no-img"}" title="${p.cover ? "Con imagen" : "Sin imagen"}"></span>
+    `;
+    div.onclick = () => selectProject(i);
+    list.appendChild(div);
+  });
+}
+
+function selectProject(i) {
+  selected = i;
+  renderSidebar();
+  fillForm(projects[i]);
+  if (activeTab !== "editor" && activeTab !== "media") switchTab("editor");
+  else showEditorForm();
+}
+
+// ── Editor form ────────────────────────────────────────────────
+function showEditorForm() {
+  document.getElementById("editor-empty").style.display = "none";
+  document.getElementById("editor-form").style.display = "block";
+}
+
+function fillForm(p) {
+  showEditorForm();
+  document.getElementById("f-title").value  = p.title  || "";
+  document.getElementById("f-client").value = p.client || "";
+  document.getElementById("f-year").value   = p.year   || "";
+  document.getElementById("f-tag").value    = p.tag    || "";
+  setCoverPreview(p.cover);
+}
+
+function setCoverPreview(src) {
+  const wrap = document.getElementById("cover-preview");
+  const pathEl = document.getElementById("cover-path");
+  const removeBtn = document.getElementById("btn-remove-img");
+  if (src) {
+    wrap.innerHTML = `<img src="/${src}" alt="cover" />`;
+    pathEl.textContent = src;
+    removeBtn.style.display = "inline-flex";
+  } else {
+    wrap.innerHTML = `<div class="img-placeholder">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      <span>Sin imagen</span></div>`;
+    pathEl.textContent = "";
+    removeBtn.style.display = "none";
+  }
+}
+
+function readForm() {
+  return {
+    title:  document.getElementById("f-title").value.trim(),
+    client: document.getElementById("f-client").value.trim(),
+    year:   document.getElementById("f-year").value.trim(),
+    tag:    document.getElementById("f-tag").value.trim(),
+  };
+}
+
+// ── Image upload ───────────────────────────────────────────────
+function onDragOver(e)  { e.preventDefault(); document.getElementById("drop-zone").classList.add("dragover"); }
+function onDragLeave(e) { document.getElementById("drop-zone").classList.remove("dragover"); }
+function onDrop(e) {
+  e.preventDefault();
+  document.getElementById("drop-zone").classList.remove("dragover");
+  const file = e.dataTransfer.files[0];
+  if (file) uploadFile(file);
+}
+function handleFileSelect(e) { if (e.target.files[0]) uploadFile(e.target.files[0]); }
+
+async function uploadFile(file) {
+  if (selected === null) { toast("Selecciona un proyecto primero", "err"); return; }
+  const fd = new FormData();
+  fd.append("image", file);
+  toast("Subiendo imagen...");
+  const res  = await fetch("/api/upload", { method: "POST", body: fd });
+  const data = await res.json();
+  if (!data.ok) { toast("Error al subir: " + data.error, "err"); return; }
+  projects[selected].cover = data.path;
+  setCoverPreview(data.path);
+  renderSidebar();
+  await loadUploads();
+  toast("Imagen asignada ✓", "ok");
+}
+
+async function uploadMultiple(e) {
+  const files = Array.from(e.target.files);
+  for (const file of files) {
+    const fd = new FormData();
+    fd.append("image", file);
+    await fetch("/api/upload", { method: "POST", body: fd });
+  }
+  await loadUploads();
+  toast(`${files.length} imagen(es) subida(s) ✓`, "ok");
+  e.target.value = "";
+}
+
+function removeCover() {
+  if (selected === null) return;
+  projects[selected].cover = null;
+  setCoverPreview(null);
+  renderSidebar();
+}
+
+// ── Media library ──────────────────────────────────────────────
+function renderMediaGrid() {
+  const grid = document.getElementById("media-grid");
+  grid.innerHTML = "";
+  if (!uploads.length) {
+    grid.innerHTML = `<p class="mono" style="color:var(--dim);font-size:11px;grid-column:1/-1;">No hay imágenes aún</p>`;
+    return;
+  }
+  uploads.forEach((u) => {
+    const div = document.createElement("div");
+    div.className = "media-thumb";
+    const isCover = selected !== null && projects[selected]?.cover === u.path;
+    if (isCover) div.classList.add("selected");
+    div.innerHTML = `<img src="/${u.path}" alt="${u.name}" loading="lazy" /><span class="thumb-name">${u.name}</span>`;
+    div.onclick = () => assignFromLibrary(u.path);
+    grid.appendChild(div);
+  });
+}
+
+function assignFromLibrary(imgPath) {
+  if (selected === null) { toast("Selecciona un proyecto primero", "err"); return; }
+  projects[selected].cover = imgPath;
+  setCoverPreview(imgPath);
+  renderSidebar();
+  renderMediaGrid();
+  switchTab("editor");
+  toast("Imagen asignada ✓", "ok");
+}
+
+// ── Save / Add / Delete / Move ─────────────────────────────────
+async function saveAll() {
+  if (selected !== null) {
+    const f = readForm();
+    projects[selected].title  = f.title  || projects[selected].title;
+    projects[selected].client = f.client;
+    projects[selected].year   = f.year;
+    projects[selected].tag    = f.tag;
+  }
+  const res = await fetch("/api/projects", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(projects),
+  });
+  const data = await res.json();
+  if (data.ok) { toast("Guardado ✓", "ok"); renderSidebar(); }
+  else toast("Error al guardar: " + data.error, "err");
+}
+
+function addProject() {
+  const maxN = projects.reduce((m, p) => Math.max(m, parseInt(p.n, 10) || 0), 0);
+  const newN = String(maxN + 1).padStart(2, "0");
+  const proj = { n: newN, title: "Nuevo proyecto", client: "", year: String(new Date().getFullYear()), tag: "", cover: null };
+  projects.push(proj);
+  renderSidebar();
+  selectProject(projects.length - 1);
+}
+
+function deleteProject() {
+  if (selected === null) return;
+  if (!confirm(`¿Eliminar "${projects[selected].title}"?`)) return;
+  projects.splice(selected, 1);
+  projects.forEach((p, i) => p.n = String(i + 1).padStart(2, "0"));
+  selected = null;
+  renderSidebar();
+  document.getElementById("editor-empty").style.display = "flex";
+  document.getElementById("editor-form").style.display  = "none";
+  toast("Proyecto eliminado", "ok");
+}
+
+function moveProject(dir) {
+  if (selected === null) return;
+  const target = selected + dir;
+  if (target < 0 || target >= projects.length) return;
+  [projects[selected], projects[target]] = [projects[target], projects[selected]];
+  projects.forEach((p, i) => p.n = String(i + 1).padStart(2, "0"));
+  selected = target;
+  renderSidebar();
+  fillForm(projects[selected]);
+}
+
+// ── Deploy ─────────────────────────────────────────────────────
+async function deploy() {
+  await saveAll();
+  const btn = document.getElementById("btn-deploy");
+  const btn2 = document.getElementById("btn-deploy-main");
+  const log = document.getElementById("deploy-log");
+  [btn, btn2].forEach(b => { if(b) b.classList.add("loading"); b.disabled = true; });
+  log.className = "deploy-log visible";
+  log.textContent = "Preparando deploy...\n";
+
+  const msg = document.getElementById("deploy-msg")?.value || "content: update portfolio";
+  try {
+    const res  = await fetch("/api/deploy", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: msg }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      log.innerHTML += `<span class="ok">✓ ${data.message}</span>\n`;
+      toast("Deploy enviado ✓", "ok");
+      const url = localStorage.getItem("mm_netlify_url");
+      if (url) log.innerHTML += `<a href="${url}" target="_blank" class="netlify-link">${url}</a>`;
+    } else {
+      log.innerHTML += `<span class="err">✗ Error: ${data.error}</span>\n`;
+      toast("Error en deploy", "err");
+    }
+  } catch(e) {
+    log.innerHTML += `<span class="err">✗ ${e.message}</span>\n`;
+    toast("Error de conexión", "err");
+  }
+  [btn, btn2].forEach(b => { if(b) { b.classList.remove("loading"); b.disabled = false; } });
+}
+
+// ── Tabs ───────────────────────────────────────────────────────
+function switchTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
+  ["editor","media","preview","deploy"].forEach(t => {
+    const el = document.getElementById("tab-" + t);
+    if (el) el.style.display = (t === tab ? (t === "preview" ? "block" : "block") : "none");
+  });
+  if (tab === "media") renderMediaGrid();
+  if (tab === "preview") { setPreviewFrame(); document.getElementById("tab-preview").style.height = "100%"; }
+}
+
+// ── Preview ────────────────────────────────────────────────────
+function setPreview(mode) {
+  previewMode = mode;
+  document.getElementById("prev-desktop").classList.toggle("active", mode === "desktop");
+  document.getElementById("prev-desktop").classList.toggle("btn-accent", mode === "desktop");
+  document.getElementById("prev-mobile").classList.toggle("active",  mode === "mobile");
+  document.getElementById("prev-mobile").classList.toggle("btn-accent",  mode === "mobile");
+  setPreviewFrame();
+}
+
+function setPreviewFrame() {
+  const wrap  = document.getElementById("preview-frame-wrap");
+  const frame = document.getElementById("preview-frame");
+  if (!wrap || !frame) return;
+  if (previewMode === "mobile") {
+    frame.style.width  = "390px";
+    frame.style.height = "calc(100vh - 130px)";
+    wrap.style.justifyContent = "center";
+    wrap.style.alignItems = "flex-start";
+  } else {
+    frame.style.width  = "100%";
+    frame.style.height = "calc(100vh - 130px)";
+    wrap.style.justifyContent = "stretch";
+  }
+}
+
+function reloadPreview() { document.getElementById("preview-frame").src = "/portfolio.html?" + Date.now(); }
+
+// ── Site URL ───────────────────────────────────────────────────
+function editSiteUrl() {
+  document.getElementById("site-url-block").style.display = "none";
+  document.getElementById("site-url-edit").style.display  = "block";
+  const saved = localStorage.getItem("mm_netlify_url") || "";
+  document.getElementById("netlify-url-input").value = saved;
+}
+function saveSiteUrl() {
+  const url = document.getElementById("netlify-url-input").value.trim();
+  localStorage.setItem("mm_netlify_url", url);
+  document.getElementById("site-url-display").textContent = url || "— no configurado —";
+  document.getElementById("site-url-display").style.color = url ? "var(--accent)" : "var(--dim)";
+  document.getElementById("site-url-block").style.display = "flex";
+  document.getElementById("site-url-edit").style.display  = "none";
+  toast("URL guardada ✓", "ok");
+}
+
+// ── Toast ──────────────────────────────────────────────────────
+let toastTimer;
+function toast(msg, type) {
+  const el = document.getElementById("toast");
+  clearTimeout(toastTimer);
+  el.textContent = msg;
+  el.className = "show " + (type || "");
+  toastTimer = setTimeout(() => { el.className = ""; }, 3000);
+}
+
+// ── Boot ───────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>

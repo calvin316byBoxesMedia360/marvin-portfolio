@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Samples — Tratamiento de imagen</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a; --fg: #f2f2ee; --dim: #8a8a85; --line: #1f1f1e;
+    --accent: oklch(0.86 0.09 162);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg);
+    font-family: "Inter Tight", ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased; }
+  .mono { font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .serif { font-family: "Instrument Serif", serif; font-style: italic; font-weight: 400; }
+  .dim { color: var(--dim); }
+  .accent { color: var(--accent); }
+
+  .container { max-width: 1400px; margin: 0 auto; padding: 80px 40px; }
+
+  h1 { font-size: clamp(48px, 7vw, 96px); line-height: 0.95; letter-spacing: -0.04em; font-weight: 400; margin: 0 0 16px; }
+  h2 { font-size: clamp(24px, 3vw, 40px); line-height: 1; letter-spacing: -0.02em; font-weight: 400; margin: 0 0 24px; }
+  h1 em { font-style: normal; color: var(--accent); }
+
+  .intro { max-width: 720px; margin-bottom: 24px; }
+  .intro p { font-size: 17px; line-height: 1.55; color: var(--fg); max-width: 620px; }
+
+  .section { padding: 80px 0; border-top: 1px solid var(--line); }
+  .section-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 48px; gap: 24px; flex-wrap: wrap; }
+  .section-head .meta { max-width: 420px; }
+
+  /* Before / After */
+  .ba-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  }
+  @media (max-width: 720px) { .ba-grid { grid-template-columns: 1fr; } }
+  .ba-cell { position: relative; }
+  .ba-cell img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; background: #111; }
+  .ba-cell .tag { position: absolute; top: 12px; left: 12px; padding: 6px 10px; background: var(--bg); color: var(--fg);
+    font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; }
+  .ba-cell.after .tag { background: var(--accent); color: var(--bg); }
+
+  /* Gallery preview */
+  .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  @media (max-width: 800px) { .gallery { grid-template-columns: 1fr 1fr; } }
+  .gallery-item { display: block; }
+  .gallery-item img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; }
+  .gallery-item .meta-row { margin-top: 10px; display: flex; justify-content: space-between; }
+
+  /* Index preview row */
+  .index-preview { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .index-row {
+    display: grid; grid-template-columns: 60px 1fr 220px 140px 80px;
+    align-items: center; padding: 22px 0; border-bottom: 1px solid var(--line);
+  }
+  .index-row:last-child { border-bottom: 0; }
+  .index-row .title { font-size: 24px; letter-spacing: -0.01em; }
+  @media (max-width: 720px) {
+    .index-row { grid-template-columns: 40px 1fr 60px; }
+    .index-row .client-col, .index-row .tag-col { display: none; }
+  }
+
+  .note {
+    padding: 20px 24px; margin-top: 32px;
+    border-left: 2px solid var(--accent); background: rgba(255,255,255,0.02);
+    font-size: 14px; line-height: 1.6;
+  }
+  .note strong { color: var(--accent); font-weight: 500; }
+
+  .pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px; }
+  @media (max-width: 640px) { .pros-cons { grid-template-columns: 1fr; } }
+  .pc-card { padding: 20px 24px; border: 1px solid var(--line); }
+  .pc-card h4 { margin: 0 0 12px; font-size: 13px; font-family: "JetBrains Mono", monospace; letter-spacing: 0.1em; text-transform: uppercase; }
+  .pc-card ul { margin: 0; padding: 0 0 0 16px; font-size: 14px; line-height: 1.6; }
+  .pc-card li { margin-bottom: 6px; }
+
+  .footer { padding: 60px 0 20px; border-top: 1px solid var(--line); }
+  .footer-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color .2s; }
+  a:hover { border-color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div class="mono dim" style="margin-bottom: 24px;">§ Treatment study · 2026</div>
+    <h1>Image <em class="serif">treatment</em><br/>samples.</h1>
+    <div class="intro">
+      <p class="dim" style="margin-top: 32px;">
+        Propuesta de tratamiento para las imágenes del portafolio. Objetivo: unificar 80+ fotos
+        de taller en una misma familia editorial, sin perder la vibración del color del trabajo.
+      </p>
+    </div>
+    <div class="mono" style="margin-top: 24px; display: flex; gap: 32px; flex-wrap: wrap;">
+      <span><span class="dim">Technique →</span> square crop · saturation +5-10% · contrast +10% · radial vignette</span>
+    </div>
+  </header>
+
+  <!-- SECTION 1: BEFORE / AFTER -->
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <div class="mono dim" style="margin-bottom: 8px;">§ 01</div>
+        <h2>Antes <span class="serif dim">vs</span> Después</h2>
+      </div>
+      <div class="meta mono dim">
+        Original del taller (izq.) → Tratada para portafolio (der.)
+      </div>
+    </div>
+
+    <!-- PAIR 1 -->
+    <div style="margin-bottom: 40px;">
+      <div class="mono" style="margin-bottom: 12px;">P.01 — COEX Oro · Branding</div>
+      <div class="ba-grid">
+        <div class="ba-cell">
+          <img src="uploads/FB_IMG_1765735453795-1.jpg" alt="COEX original"/>
+          <div class="tag">Original</div>
+        </div>
+        <div class="ba-cell after">
+          <img src="assets/sample-coex.jpg" alt="COEX tratada"/>
+          <div class="tag">Treated</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAIR 2 -->
+    <div style="margin-bottom: 40px;">
+      <div class="mono" style="margin-bottom: 12px;">P.02 — Los Cuates · Editorial menu</div>
+      <div class="ba-grid">
+        <div class="ba-cell">
+          <img src="uploads/pagina3.jpg" alt="Menu original"/>
+          <div class="tag">Original</div>
+        </div>
+        <div class="ba-cell after">
+          <img src="assets/sample-menu.jpg" alt="Menu tratada"/>
+          <div class="tag">Treated</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAIR 3 -->
+    <div style="margin-bottom: 40px;">
+      <div class="mono" style="margin-bottom: 12px;">P.03 — Character series · SpongeBob</div>
+      <div class="ba-grid">
+        <div class="ba-cell">
+          <img src="uploads/FB_IMG_1765735081974-1.jpg" alt="SpongeBob original"/>
+          <div class="tag">Original</div>
+        </div>
+        <div class="ba-cell after">
+          <img src="assets/sample-spongebob.jpg" alt="SpongeBob tratada"/>
+          <div class="tag">Treated</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAIR 4 -->
+    <div>
+      <div class="mono" style="margin-bottom: 12px;">P.04 — Silvio Rodríguez · Portrait</div>
+      <div class="ba-grid">
+        <div class="ba-cell">
+          <img src="uploads/FB_IMG_1765729534685.jpg" alt="Silvio original"/>
+          <div class="tag">Original</div>
+        </div>
+        <div class="ba-cell after">
+          <img src="assets/sample-silvio.jpg" alt="Silvio tratada"/>
+          <div class="tag">Treated</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>Qué cambia:</strong> crop cuadrado para uniformidad; viñeta sutil que empuja la mirada al producto y
+      "funde" fondos desordenados del taller con el negro del sitio; saturación +5–10% y contraste +10% para que los colores
+      conserven carácter sin verse procesados. Las fotos ya no compiten con el layout — forman parte de él.
+    </div>
+  </section>
+
+  <!-- SECTION 2: GALLERY PREVIEW -->
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <div class="mono dim" style="margin-bottom: 8px;">§ 02</div>
+        <h2>Vista de galería <span class="serif dim">(Grid)</span></h2>
+      </div>
+      <div class="meta mono dim">
+        Así se ven juntas en el layout tipo grid.
+      </div>
+    </div>
+
+    <div class="gallery">
+      <a class="gallery-item">
+        <img src="assets/sample-coex.jpg" alt="COEX"/>
+        <div class="meta-row mono"><span>P.01 — Brand</span><span class="dim">2024</span></div>
+      </a>
+      <a class="gallery-item">
+        <img src="assets/sample-menu.jpg" alt="Los Cuates"/>
+        <div class="meta-row mono"><span>P.02 — Editorial</span><span class="dim">2026</span></div>
+      </a>
+      <a class="gallery-item">
+        <img src="assets/sample-spongebob.jpg" alt="SpongeBob"/>
+        <div class="meta-row mono"><span>P.03 — Character</span><span class="dim">2023</span></div>
+      </a>
+      <a class="gallery-item">
+        <img src="assets/sample-silvio.jpg" alt="Silvio"/>
+        <div class="meta-row mono"><span>P.04 — Portrait</span><span class="dim">2022</span></div>
+      </a>
+      <a class="gallery-item">
+        <img src="assets/sample-caps.jpg" alt="Caps"/>
+        <div class="meta-row mono"><span>P.05 — System</span><span class="dim">2023</span></div>
+      </a>
+      <a class="gallery-item">
+        <img src="assets/sample-femenina.jpg" alt="Femenina"/>
+        <div class="meta-row mono"><span>P.06 — Broadcast</span><span class="dim">2022</span></div>
+      </a>
+    </div>
+  </section>
+
+  <!-- SECTION 3: INDEX PREVIEW (hover simulation) -->
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <div class="mono dim" style="margin-bottom: 8px;">§ 03</div>
+        <h2>En contexto <span class="serif dim">(Index)</span></h2>
+      </div>
+      <div class="meta mono dim">
+        Así se comportan como miniaturas en el layout editorial.
+      </div>
+    </div>
+
+    <div class="index-preview">
+      <div class="index-row">
+        <div class="mono">P.01</div>
+        <div class="title">COEX Oro</div>
+        <div class="mono dim client-col">Café tostado y molido</div>
+        <div class="mono tag-col">Brand · Packaging</div>
+        <div class="mono" style="text-align: right;">2024</div>
+      </div>
+      <div class="index-row">
+        <div class="mono">P.02</div>
+        <div class="title">Los Cuates — Taquería menu</div>
+        <div class="mono dim client-col">Hollister, CA</div>
+        <div class="mono tag-col">Editorial · Print</div>
+        <div class="mono" style="text-align: right;">2026</div>
+      </div>
+      <div class="index-row">
+        <div class="mono">P.03</div>
+        <div class="title">Character series</div>
+        <div class="mono dim client-col">Retail line</div>
+        <div class="mono tag-col">Apparel · System</div>
+        <div class="mono" style="text-align: right;">2023</div>
+      </div>
+      <div class="index-row">
+        <div class="mono">P.04</div>
+        <div class="title">Silvio Rodríguez</div>
+        <div class="mono dim client-col">Tribute tee</div>
+        <div class="mono tag-col">Vector · Portrait</div>
+        <div class="mono" style="text-align: right;">2022</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: ALTERNATIVE -->
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <div class="mono dim" style="margin-bottom: 8px;">§ 04</div>
+        <h2>Alternativa <span class="serif dim">(sin viñeta)</span></h2>
+      </div>
+      <div class="meta mono dim">
+        Mismo crop y color, pero sin oscurecer los bordes. Más "catálogo", menos editorial.
+      </div>
+    </div>
+
+    <div class="ba-grid">
+      <div class="ba-cell">
+        <img src="assets/sample-coex.jpg" alt="COEX con viñeta"/>
+        <div class="tag">A · Con viñeta</div>
+      </div>
+      <div class="ba-cell after">
+        <img src="assets/sample-coex-clean.jpg" alt="COEX sin viñeta"/>
+        <div class="tag">B · Sin viñeta</div>
+      </div>
+    </div>
+    <div style="margin-top: 16px;"></div>
+    <div class="ba-grid">
+      <div class="ba-cell">
+        <img src="assets/sample-spongebob.jpg" alt="SpongeBob con viñeta"/>
+        <div class="tag">A · Con viñeta</div>
+      </div>
+      <div class="ba-cell after">
+        <img src="assets/sample-spongebob-clean.jpg" alt="SpongeBob sin viñeta"/>
+        <div class="tag">B · Sin viñeta</div>
+      </div>
+    </div>
+
+    <div class="pros-cons">
+      <div class="pc-card">
+        <h4>A · Con viñeta <span class="accent">← mi recomendación</span></h4>
+        <ul class="dim">
+          <li>Esconde fondos desordenados de taller</li>
+          <li>Funde las imágenes con el fondo negro del sitio</li>
+          <li>Más editorial, más "galería"</li>
+          <li>Mejor para cohesión entre 80 fotos distintas</li>
+        </ul>
+      </div>
+      <div class="pc-card">
+        <h4>B · Sin viñeta</h4>
+        <ul class="dim">
+          <li>Más honesto, muestra contexto real</li>
+          <li>Colores más presentes en los bordes</li>
+          <li>Más "catálogo" tradicional</li>
+          <li>Menos forgiving con fondos feos</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-row">
+      <div class="mono dim">Marvin Martinez · Portfolio treatment study · v.0.1</div>
+      <div class="mono">
+        <a href="portfolio.html">← Volver al portafolio</a>
+      </div>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

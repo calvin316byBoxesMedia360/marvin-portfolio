@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Portfolio — Responsive preview</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #0a0a0a; color: #f2f2ee;
+    font-family: "JetBrains Mono", ui-monospace, monospace; min-height: 100vh; }
+
+  .tabs {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 100;
+    display: flex; gap: 4px; padding: 4px;
+    background: #151514; border: 1px solid #1f1f1e; border-radius: 999px;
+  }
+  .tabs button {
+    font: inherit; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 9px 18px; border: 0; border-radius: 999px;
+    background: transparent; color: #8a8a85; cursor: pointer;
+    transition: all .2s ease;
+  }
+  .tabs button.active { background: oklch(0.86 0.09 162); color: #0a0a0a; }
+  .tabs button:hover:not(.active) { color: #f2f2ee; }
+
+  .open-btn {
+    position: fixed; top: 20px; right: 20px; z-index: 100;
+    font: inherit; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 10px 16px; border: 1px solid #1f1f1e; border-radius: 999px;
+    background: #151514; color: #f2f2ee; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .open-btn:hover { border-color: oklch(0.86 0.09 162); color: oklch(0.86 0.09 162); }
+
+  .stage { padding: 84px 24px 40px; min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; }
+
+  /* Desktop browser chrome */
+  .desktop {
+    width: 100%; max-width: 1400px;
+    background: #151514; border: 1px solid #1f1f1e; border-radius: 10px;
+    overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+  }
+  .bar {
+    height: 34px; padding: 0 14px;
+    display: flex; align-items: center; gap: 8px;
+    background: #1a1a19; border-bottom: 1px solid #1f1f1e;
+  }
+  .dot { width: 11px; height: 11px; border-radius: 50%; background: #2a2a29; }
+  .desktop iframe { width: 100%; height: calc(100vh - 170px); border: 0; display: block; background: #0a0a0a; }
+
+  /* Phone frame */
+  .phone {
+    width: 390px; height: 820px;
+    border-radius: 48px; border: 10px solid #111; background: #000;
+    position: relative; overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset;
+  }
+  .phone::before {
+    content: ""; position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+    width: 110px; height: 28px; background: #000; border-radius: 18px; z-index: 10;
+  }
+  .phone iframe { width: 100%; height: 100%; border: 0; display: block; background: #0a0a0a; }
+
+  .hidden { display: none !important; }
+
+  .caption {
+    position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+    font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #4a4a48;
+  }
+</style>
+</head>
+<body>
+  <div class="tabs">
+    <button id="t-desktop" class="active">Desktop</button>
+    <button id="t-mobile">Mobile · 390</button>
+  </div>
+
+  <a class="open-btn" href="portfolio.html" target="_blank">Open full ↗</a>
+
+  <div class="stage">
+    <div class="desktop" id="f-desktop">
+      <div class="bar">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      </div>
+      <iframe src="portfolio.html" title="Desktop preview" loading="eager"></iframe>
+    </div>
+
+    <div class="phone hidden" id="f-mobile">
+      <iframe src="portfolio.html" title="Mobile preview" loading="eager"></iframe>
+    </div>
+  </div>
+
+  <div class="caption">Resize window to test responsive · or use tabs above</div>
+
+  <script>
+    const tD = document.getElementById('t-desktop');
+    const tM = document.getElementById('t-mobile');
+    const fD = document.getElementById('f-desktop');
+    const fM = document.getElementById('f-mobile');
+    tD.onclick = () => {
+      tD.classList.add('active'); tM.classList.remove('active');
+      fD.classList.remove('hidden'); fM.classList.add('hidden');
+    };
+    tM.onclick = () => {
+      tM.classList.add('active'); tD.classList.remove('active');
+      fM.classList.remove('hidden'); fD.classList.add('hidden');
+    };
+  </script>
+</body>
+</html>
