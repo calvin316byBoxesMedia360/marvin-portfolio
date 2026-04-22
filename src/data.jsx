@@ -1,8 +1,8 @@
 const PROJECTS = [
   { n: "01", title: "CJR Grading & Paving", client: "Carlos J. Romero", year: "2025", tag: "Brand · Print", cover: "assets/work-01-cjr.png", real: true },
   { n: "02", title: "Angela Curro wrap instalation", client: "Advanced Auto Specialties", year: "2026", tag: "Wrap installation", cover: "uploads/proj_1776623471856.jpg" },
-  { n: "03", title: "Editorial series vol. I", client: "Personal", year: "2024", tag: "Editorial", cover: null },
-  { n: "04", title: "Identity exploration", client: "Confidential", year: "2024", tag: "Brand", cover: null },
+  { n: "03", title: "DES831 logo", client: "Jeniffer Villeda", year: "2025", tag: "Editorial", cover: "uploads/proj_1776829530839_a063f81bc2.png" },
+  { n: "04", title: "La Pupusa Loca logo", client: "Jeniffer Villeda", year: "2024", tag: "creation logo", cover: "uploads/proj_1776829627683_8a1702b802.png" },
   { n: "05", title: "Product interface study", client: "R&D", year: "2024", tag: "Product · UI", cover: null },
   { n: "06", title: "Packaging concept", client: "Personal", year: "2024", tag: "Packaging", cover: null },
   { n: "07", title: "Type specimen", client: "Personal", year: "2023", tag: "Type · Editorial", cover: null },
