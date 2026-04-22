@@ -3,7 +3,7 @@ const PROJECTS = [
   { n: "02", title: "Angela Curro wrap instalation", client: "Advanced Auto Specialties", year: "2026", tag: "Wrap installation", cover: "uploads/proj_1776623471856.jpg" },
   { n: "03", title: "DES831 logo", client: "Jeniffer Villeda", year: "2025", tag: "Editorial", cover: "uploads/proj_1776829530839_a063f81bc2.png" },
   { n: "04", title: "La Pupusa Loca logo", client: "Jeniffer Villeda", year: "2024", tag: "creation logo", cover: "uploads/proj_1776829627683_8a1702b802.png" },
-  { n: "05", title: "Product interface study", client: "R&D", year: "2024", tag: "Product · UI", cover: null },
+  { n: "05", title: "Product interface study", client: "R&D", year: "2024", tag: "Product · UI", cover: "uploads/20250326_091705.jpg" },
   { n: "06", title: "Packaging concept", client: "Personal", year: "2024", tag: "Packaging", cover: null },
   { n: "07", title: "Type specimen", client: "Personal", year: "2023", tag: "Type · Editorial", cover: null },
   { n: "08", title: "Campaign direction", client: "Agency work", year: "2023", tag: "Art direction", cover: null },
